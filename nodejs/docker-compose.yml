@@ -1,0 +1,18 @@
+version: "3.4"
+
+services: 
+  postman-prometheus-exporter-nodejs:
+    image: mrmyiagi/postman-prometheus-exporter-nodejs
+    container_name: postman-prometheus-exporter-nodejs
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9013:8080"
+      - "3001:3001"
+    environment: 
+    - SSO_URL=https://sso_url.com
+    - CLIENT_ID=1234
+    - CLIENT_SECRET=1234
+    - PARTNER_URL=https://partner_url.com
+    restart: unless-stopped

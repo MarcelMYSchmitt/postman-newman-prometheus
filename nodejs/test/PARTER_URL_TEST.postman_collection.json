@@ -1,0 +1,152 @@
+{
+    "info": {
+        "_postman_id": "867e49cd-7609-4d0b-bfe2-64cf8a79cce4",
+        "name": "PARTER_URL Test",
+        "description": "Small sample for getting a Bearer Token from oAuth Provider for accessing another partner system, where ClientID was authorized before. ",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [{
+            "name": "Get Bearer Token",
+            "event": [{
+                "listen": "test",
+                "script": {
+                    "exec": [
+                        "console.log(\"Calling oAuth Provider: \" + pm.variables.get('SSO_URL'))\r",
+                        "\r",
+                        "pm.test(\"Status code is 200\", () => {\r",
+                        "  pm.response.to.have.status(200);\r",
+                        "});\r",
+                        "\r",
+                        "const responseJson = pm.response.json();\r",
+                        "const newAccessToken = responseJson.access_token\r",
+                        "pm.environment.set('ACCESS_TOKEN', newAccessToken);\r",
+                        "\r",
+                        "console.log(\"Bearer Token retrieved: \" + pm.environment.get('ACCESS_TOKEN'))\r",
+                        "\r",
+                        ""
+                    ],
+                    "type": "text/javascript"
+                }
+            }],
+            "request": {
+                "auth": {
+                    "type": "basic",
+                    "basic": [{
+                            "key": "password",
+                            "value": "{{CLIENT_SECRET}}",
+                            "type": "string"
+                        },
+                        {
+                            "key": "username",
+                            "value": "{{CLIENT_ID}}",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "method": "POST",
+                "header": [],
+                "url": {
+                    "raw": "{{SSO_URL}}/as/token.oauth2?grant_type=client_credentials&scope=openid",
+                    "host": [
+                        "{{SSO_URL}}"
+                    ],
+                    "path": [
+                        "as",
+                        "token.oauth2"
+                    ],
+                    "query": [{
+                            "key": "SSO_URL",
+                            "value": "{{SSO_URL}}",
+                            "disabled": true
+                        },
+                        {
+                            "key": "CLIENT_ID",
+                            "value": "{{CLIENT_ID}}",
+                            "disabled": true
+                        },
+                        {
+                            "key": "CLIENT_SECRET",
+                            "value": "{{CLIENT_SECRET}}",
+                            "disabled": true
+                        },
+                        {
+                            "key": "grant_type",
+                            "value": "client_credentials"
+                        },
+                        {
+                            "key": "scope",
+                            "value": "openid"
+                        }
+                    ]
+                },
+                "description": "Get Bearer Token from oAuth Provider."
+            },
+            "response": []
+        },
+        {
+            "name": "Call Partner System",
+            "event": [{
+                "listen": "test",
+                "script": {
+                    "exec": [
+                        "console.log(\"Calling Partner System: \" + pm.variables.get('PARTNER_URL'))\r",
+                        "\r",
+                        "pm.test(\"Status code is 200\", () => {\r",
+                        "  pm.response.to.have.status(200);\r",
+                        "});"
+                    ],
+                    "type": "text/javascript"
+                }
+            }],
+            "request": {
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [{
+                        "key": "token",
+                        "value": "{{ACCESS_TOKEN}}",
+                        "type": "string"
+                    }]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{PARTNER_URL}}",
+                    "host": [
+                        "{{PARTNER_URL}}"
+                    ],
+                    "query": [{
+                            "key": "SSO_URL",
+                            "value": "{{SSO_URL}}",
+                            "disabled": true
+                        },
+                        {
+                            "key": "CLIENT_ID",
+                            "value": "{{CLIENT_ID}}",
+                            "disabled": true
+                        },
+                        {
+                            "key": "CLIENT_SECRET",
+                            "value": "{{CLIENT_SECRET}}",
+                            "disabled": true
+                        },
+                        {
+                            "key": "PARTNER_URL",
+                            "value": "{{PARTNER_URL}}",
+                            "disabled": true
+                        }
+                    ]
+                }
+            },
+            "response": []
+        }
+    ],
+    "event": [{
+        "listen": "test",
+        "script": {
+            "type": "text/javascript",
+            "exec": [
+                ""
+            ]
+        }
+    }]
+}
