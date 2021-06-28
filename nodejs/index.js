@@ -3,6 +3,8 @@ const kubeProbe = require('kube-probe');
 const promClient = require('prom-client');
 var request = require('request');
 var sleep = require('system-sleep');
+const newman = require('newman');
+
 
 
 /*
@@ -45,7 +47,7 @@ https://github.com/siimon/prom-client
 #########################################################
 */
 
-const URL = process.env.SSO_URL;
+const SSO_URL = process.env.SSO_URL;
 checkIfNullOrEmpty('SSO_URL', SSO_URL);
 
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -90,7 +92,7 @@ console.log('Server listening to 3001, liveness and readiness exposed via "/heal
 kubeProbe(metricServer, options);
 
 while (1) {
-    CallEndpointAndSetAvailabilityMetric();
+    ExecutePostmanTestAndSetAvailabilityMetric();
     sleep(10000);
 }
 
@@ -105,12 +107,61 @@ function checkIfNullOrEmpty(parameterName, parameterValue) {
 }
 
 
-function CallEndpointAndSetAvailabilityMetric() {
 
+// EXECUTE POSTMAN TEST
+function ExecutePostmanTestAndSetAvailabilityMetric() {
 
     try {
+        console.log('Starting postman scripts: ');
 
-        newman run PARTER_URL_TEST.postman_collection.json--environment = "environment/ENVIRONMENT.postman_environment.json"
+        // check if proxy setting is needed! 
+        //const SocksProxyAgent = require('socks-proxy-agent');
+        //const requestAgent = new SocksProxyAgent({ host: 'add_proxy_url', port: 'add_proxy_port' });
+
+        newman.run({
+                collection: require('./test/PARTER_URL_TEST.postman_collection.json'),
+                environment: {
+                    "id": "9904cbd9-1c54-4a94-9576-d739dbd925ff",
+                    "name": "ENVIRONMENT",
+                    "values": [{
+                            "key": "SSO_URL",
+                            "value": SSO_URL,
+                            "enabled": true
+                        },
+                        {
+                            "key": "CLIENT_ID",
+                            "value": CLIENT_ID,
+                            "enabled": true
+                        },
+                        {
+                            "key": "CLIENT_SECRET",
+                            "value": CLIENT_SECRET,
+                            "enabled": true
+                        },
+                        {
+                            "key": "ACCESS_TOKEN",
+                            "value": "",
+                            "enabled": true
+                        },
+                        {
+                            "key": "PARTNER_URL",
+                            "value": PARTNER_URL,
+                            "enabled": true
+                        }
+                    ],
+                    "_postman_variable_scope": "environment"
+                },
+                //requestAgents: {
+                //http: requestAgent, // agent used for HTTP requests
+                //http: requestAgent, // agent used for HTTPS requests
+                //},
+                reporters: 'cli'
+            },
+            function(err) {
+                if (err) { throw err; }
+                console.log('collection run complete!');
+            });
+
         console.log("Set Status of Metric to 1");
 
         gauge.set(1);

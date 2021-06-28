@@ -3,6 +3,7 @@ FROM node:lts as prepare
 WORKDIR /src
 COPY package.json package.json
 
+RUN npm set strict-ssl false
 RUN npm install 
 FROM prepare as build
 

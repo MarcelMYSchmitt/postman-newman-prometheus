@@ -11,8 +11,8 @@ services:
       - "9013:8080"
       - "3001:3001"
     environment: 
-    - SSO_URL=https://sso_url.com
-    - CLIENT_ID=1234
-    - CLIENT_SECRET=1234
-    - PARTNER_URL=https://partner_url.com
+      - SSO_URL=add_sso_url
+      - CLIENT_ID=add_client_id
+      - CLIENT_SECRET=add_client_secret
+      - PARTNER_URL=add_partner_url
     restart: unless-stopped

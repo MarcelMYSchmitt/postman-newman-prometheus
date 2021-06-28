@@ -25,6 +25,4 @@ Run the built container by using following command:
 
 ### Run Docker Image with NodJS
 
-For running the tests in Kubernetes we create a NodeJS in which we run the test collection with a prometheus extension where we can publish metrics. 
-
-
+For running the tests in Kubernetes we create a NodeJS in which we run the test collection with a prometheus extension where we can publish metrics. Please check before building and executing if PROXY Settings/Configration is needed. At the moment you have to set it in code manually. When build and pushed into a docker registry, you can then deploy the image by using a helm chart, where you defined / set the environment variables. Please add the scraping configuration for Prometheus to your deployment file, so Prometheus will be able to scrape the endpoint regularly. The endpoint will be available under `/metrics`.
